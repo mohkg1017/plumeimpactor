@@ -18,7 +18,7 @@ jobs:
       - name: Dependencies
         run: |
           sudo apt update 
-          sudo apt install -y gh libxml2-utils python3 git
+          sudo apt install -y gh libxml2-utils python3 git pipx
           mkdir upload
 
       - name: Update metainfo
@@ -27,9 +27,12 @@ jobs:
 
       - name: Update sources
         run: |
+          pipx install poetry
           git clone https://github.com/flatpak/flatpak-builder-tools.git
           cd flatpak-builder-tools/cargo
-          python3 flatpak-cargo-generator.py $GITHUB_WORKSPACE/Cargo.lock -o $GITHUB_WORKSPACE/upload/cargo-sources.json
+          poetry install
+          poetry run python3 flatpak-cargo-generator.py $GITHUB_WORKSPACE/Cargo.lock \
+            -o $GITHUB_WORKSPACE/upload/cargo-sources.json
 
       - name: Commit and merge in changes
         run: |
